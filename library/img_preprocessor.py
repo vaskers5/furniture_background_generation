@@ -5,8 +5,8 @@ from transparent_background import Remover
 
 
 class ImagePreprocessor:
-    def __init__(self):
-        self.remover = Remover(mode='fast', device='cuda:0', ckpt='weights/ckpt_fast.pth')
+    def __init__(self, device):
+        self.remover = Remover(mode='fast', device=device, ckpt='weights/ckpt_fast.pth')
         self.resolution = (512, 512)
         
     def load_and_preprocess_img(self, img_path: str):

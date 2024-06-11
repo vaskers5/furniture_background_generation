@@ -6,7 +6,7 @@ from loguru import logger
 
 
 class ClipClassfifier:
-    def __init__(self, furniture_types: list[str]):
+    def __init__(self, device, furniture_types: list[str]):
         self.furniture_types = furniture_types
         self.model, self.preprocess = create_model_from_pretrained('hf-hub:timm/ViT-SO400M-14-SigLIP')
         self.tokenizer = get_tokenizer('hf-hub:timm/ViT-SO400M-14-SigLIP')
