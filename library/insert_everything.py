@@ -2,6 +2,7 @@ import os
 import shutil
 
 import torch
+from loguru import logger
 
 from library.clip_classifier import ClipClassfifier
 from library.img_preprocessor import ImagePreprocessor
@@ -27,6 +28,7 @@ class InsertEvetything:
         for loc_idx, location in enumerate(self.data[item_description["category"]]):
             
             prompt = f"{item_description['furniture']} {location}"
+            logger.info(f"Current generation prompt is: '{prompt}'")
             loc_folder = os.path.join("results", str(loc_idx))
             
             shutil.rmtree(loc_folder, ignore_errors=True)
