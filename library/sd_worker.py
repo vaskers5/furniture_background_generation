@@ -9,7 +9,7 @@ class SdWorker:
         self.model_id = "yahoo-inc/photo-background-generation"
         self.pipeline = DiffusionPipeline.from_pretrained(self.model_id, custom_pipeline=self.model_id)
         self.pipeline = self.pipeline.to(device)
-        self.num_images_per_prompt = 1
+        self.num_images_per_prompt = 20
         self.seed = 42
         self.cond_scale = 1.0
         self.generator = torch.Generator(device="cuda").manual_seed(self.seed)

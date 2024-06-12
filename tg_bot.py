@@ -20,7 +20,6 @@ from library.insert_everything import InsertEvetything
 
 
 
-
 # Enable logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -49,7 +48,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         [InlineKeyboardButton("Вне дома", callback_data="outdoor")],
         [InlineKeyboardButton("Определить автоматически", callback_data="automatic")],
         [InlineKeyboardButton("Подойдет любой вариант", callback_data="all")],
-        [InlineKeyboardButton("Отмена", callback_data="cancel")],
+        # [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Выберите аргумент пайплайна:", reply_markup=reply_markup)
@@ -63,7 +62,7 @@ async def choose_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return await cancel(update, context)
     context.user_data["location"] = query.data
     keyboard = [
-        [InlineKeyboardButton("Отмена", callback_data="cancel")],
+        # [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(text=f"Вы выбрали: {query.data}. Сколько картинок вы хотите увидеть? (Максимум 20)",
@@ -78,7 +77,7 @@ async def choose_count(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         return CHOOSE_COUNT
     context.user_data["count"] = count
     keyboard = [
-        [InlineKeyboardButton("Отмена", callback_data="cancel")],
+        # [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Загрузите картинку:", reply_markup=reply_markup)
@@ -95,8 +94,8 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     progress_message = update.message.reply_text("Начинаю обработку...")
 
-    def progress_callback(progress, total):
-        progress_message.edit_text(f"Прогресс: {progress}/{total}")
+    async def progress_callback(progress, total):
+        await progress_message.edit_text(f"Прогресс: {progress}/{total}")
 
     # result_images = temp_func(img, results_count, progress_callback, generation_location)
     result_images = PIPELINE(img, results_count, generation_location, progress_callback)

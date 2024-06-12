@@ -6,6 +6,7 @@ import torch
 from loguru import logger
 from PIL import Image
 from tqdm import tqdm
+import asyncio
 
 from library.clip_classifier import ClipClassfifier
 from library.img_preprocessor import ImagePreprocessor
@@ -47,12 +48,9 @@ class InsertEvetything:
             logger.info(f"Current generation prompt is: '{prompt}'")
 
             pipe_images = self.sd_worker(prompt, preproc_data)
-            progress_callback(loc_idx + 1, total_operations)
             all_generated_images.extend(pipe_images)
 
         pipe_images = self.iqa_ranker(pipe_images, num_infer_images=num_result_imgs)
-        progress_callback(loc_idx + 1, total_operations)
         
-        result_images = self.post_proc(pipe_images, loc_folder)
-        progress_callback(loc_idx + 2, total_operations)
+        result_images = self.post_proc(pipe_images)
         return result_images
