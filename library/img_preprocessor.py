@@ -9,8 +9,7 @@ class ImagePreprocessor:
         self.remover = Remover(mode='fast', device=device, ckpt='weights/ckpt_fast.pth')
         self.resolution = (512, 512)
         
-    def load_and_preprocess_img(self, img_path: str):
-        orig_img = Image.open(img_path)
+    def load_and_preprocess_img(self, orig_img: Image):
         resized_img = self.__resize_with_padding(orig_img, self.resolution)
         fg_mask = self.remover.process(resized_img, type='map')
         mask = ImageOps.invert(fg_mask)

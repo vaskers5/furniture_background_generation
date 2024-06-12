@@ -3,6 +3,8 @@ import shutil
 
 import torch
 from loguru import logger
+from tqdm import tqdm
+from PIL import Image
 
 from library.clip_classifier import ClipClassfifier
 from library.img_preprocessor import ImagePreprocessor
@@ -20,12 +22,16 @@ class InsertEvetything:
         self.post_proc = PostProcessor(device)
         self.sd_worker = SdWorker(device)
 
-    def __call__(self, img_path: str) -> None:
+    def __call__(self, img: Image) -> None:
         
-        preproc_data = self.preprocessor.load_and_preprocess_img(img_path)
+        preproc_data = self.preprocessor.load_and_preprocess_img(img)
         item_description = self.clip_clf.describe_image(preproc_data["orig_img"])
-
-        for loc_idx, location in enumerate(self.data[item_description["category"]]):
+        
+        all_generated_images = []
+        
+        available_locations = self.data[item_description["category"]]
+        
+        for loc_idx, location in enumerate(tqdm(available_locations, desc="Processing locations")):
             
             prompt = f"{item_description['furniture']} {location}"
             logger.info(f"Current generation prompt is: '{prompt}'")
@@ -35,4 +41,6 @@ class InsertEvetything:
             os.makedirs(loc_folder, exist_ok=True)
             
             pipe_images = self.sd_worker(prompt, preproc_data)
-            self.post_proc(pipe_images, loc_folder)
+            all_generated_images.extend(pipe_images)
+
+        return all_generated_images
