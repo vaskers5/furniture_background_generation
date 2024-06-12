@@ -1,17 +1,18 @@
-from PIL import Image, ImageOps
-import requests
 from io import BytesIO
+
+import requests
+from PIL import Image, ImageOps
 from transparent_background import Remover
 
 
 class ImagePreprocessor:
     def __init__(self, device):
-        self.remover = Remover(mode='fast', device=device, ckpt='weights/ckpt_fast.pth')
+        self.remover = Remover(mode="fast", device=device, ckpt="weights/ckpt_fast.pth")
         self.resolution = (512, 512)
-        
+
     def load_and_preprocess_img(self, orig_img: Image):
         resized_img = self.__resize_with_padding(orig_img, self.resolution)
-        fg_mask = self.remover.process(resized_img, type='map')
+        fg_mask = self.remover.process(resized_img, type="map")
         mask = ImageOps.invert(fg_mask)
         return {"orig_img": orig_img, "resized_img": resized_img, "mask": mask}
 

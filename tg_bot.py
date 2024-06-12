@@ -1,3 +1,5 @@
+import json
+
 import logging
 import asyncio
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, InputMediaPhoto
@@ -12,6 +14,12 @@ from telegram.ext import (
 )
 from PIL import Image
 from tqdm.asyncio import tqdm_asyncio
+
+
+from library.insert_everything import InsertEvetything
+
+
+
 
 # Enable logging
 logging.basicConfig(
@@ -37,10 +45,10 @@ async def temp_func(img: Image, results_count: int, progress_callback, generatio
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [
-        [InlineKeyboardButton("indoor", callback_data="indoor")],
-        [InlineKeyboardButton("outdoor", callback_data="outdoor")],
-        [InlineKeyboardButton("automatic", callback_data="automatic")],
-        [InlineKeyboardButton("all", callback_data="all")],
+        [InlineKeyboardButton("Внутри дома", callback_data="indoor")],
+        [InlineKeyboardButton("Вне дома", callback_data="outdoor")],
+        [InlineKeyboardButton("Определить автоматически", callback_data="automatic")],
+        [InlineKeyboardButton("Подойдет любой вариант", callback_data="all")],
         [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -85,12 +93,13 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     results_count = context.user_data["count"]
     generation_location = context.user_data["location"]
 
-    progress_message = await update.message.reply_text("Начинаю обработку...")
+    progress_message = update.message.reply_text("Начинаю обработку...")
 
-    async def progress_callback(progress, total):
-        await progress_message.edit_text(f"Прогресс: {progress}/{total}")
+    def progress_callback(progress, total):
+        progress_message.edit_text(f"Прогресс: {progress}/{total}")
 
-    result_images = await temp_func(img, results_count, progress_callback, generation_location)
+    # result_images = temp_func(img, results_count, progress_callback, generation_location)
+    result_images = PIPELINE(img, results_count, generation_location, progress_callback)
 
     media = [InputMediaPhoto(open(img.filename, "rb")) for img in result_images]
     await update.message.reply_media_group(media)
@@ -119,6 +128,16 @@ def main() -> None:
     application.add_handler(conv_handler)
 
     application.run_polling()
+
+
+
+def build_pipeline():
+    with open('data.json', 'r') as f:
+        data = json.load(f)
+    return InsertEvetything(data)
+
+
+PIPELINE = build_pipeline()
 
 
 if __name__ == "__main__":

@@ -11,3 +11,5 @@ transparent-background==1.2.12
 loguru==0.7.2
 open-clip-torch==2.24.0
 matplotlib==3.9.0
+pyiqa==0.1.11
+python-telegram-bot==21.3
