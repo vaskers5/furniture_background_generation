@@ -26,10 +26,10 @@ CHOOSE_LOCATION, CHOOSE_COUNT, UPLOAD_IMAGE = range(3)
 # Temporary function
 async def temp_func(img: Image, results_count: int, progress_callback, generation_location="all"):
     test_img = "test_imgs/handled_chair.webp"
-    locations_count = 40
+    locations_count = 20
 
     for i in range(locations_count):
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
         await progress_callback(i + 1, locations_count)
 
     return [Image.open(test_img) for _ in range(results_count)]
