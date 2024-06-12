@@ -22,7 +22,7 @@ class PostProcessor:
             result_images.append(sr_image)
             plot_path = os.path.join(loc_folder, "collage.png")
         
-        self.make_plot(result_images, plot_path)
+        # self.make_plot(result_images, plot_path)
 
     @staticmethod
     def make_plot(img_list, fig_path):
