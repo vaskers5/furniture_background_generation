@@ -42,4 +42,4 @@ class ImagePreprocessor:
         r_pad = expected_size[1] - l_pad - x_size
         padding = (l_pad, top_pad, r_pad, bottom_pad)
 
-        return ImageOps.expand(img, padding)
+        return ImageOps.expand(img, padding).convert("RGB")
