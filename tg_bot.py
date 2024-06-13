@@ -19,7 +19,6 @@ from tqdm.asyncio import tqdm_asyncio
 from library.insert_everything import InsertEvetything
 
 
-
 # Enable logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -98,7 +97,7 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         await progress_message.edit_text(f"Прогресс: {progress}/{total}")
 
     # result_images = temp_func(img, results_count, progress_callback, generation_location)
-    result_images = PIPELINE(img, results_count, generation_location, progress_callback)
+    result_images = await PIPELINE(img, results_count, generation_location, progress_callback)
 
     media = [InputMediaPhoto(open(img.filename, "rb")) for img in result_images]
     await update.message.reply_media_group(media)
