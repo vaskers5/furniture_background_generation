@@ -1,6 +1,7 @@
-from PIL import Image, ImageOps
-import requests
 from io import BytesIO
+
+import requests
+from PIL import Image, ImageOps
 from transparent_background import Remover
 
 
