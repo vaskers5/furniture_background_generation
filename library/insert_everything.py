@@ -19,7 +19,7 @@ class InsertEvetything:
     def __init__(self, data: dict[str, list[str]]):
         self.data = data
         device = torch.device("cuda:0")
-        self.preprocessor = ImagePreprocessor(device)
+        self.preprocessor = ImagePreprocessor(device, self.data["heuristics"])
         self.clip_clf = ClipClassfifier(device, self.data["furniture_types"])
         self.post_proc = PostProcessor(device)
         self.sd_worker = SdWorker(device)
@@ -27,8 +27,9 @@ class InsertEvetything:
 
     def __call__(self, img: Image, num_result_imgs: int, location_category: str, progress_callback: Callable) -> None:
 
-        preproc_data = self.preprocessor.load_and_preprocess_img(img)
-        item_description = self.clip_clf.describe_image(preproc_data["orig_img"])
+        raw_img = img.copy()
+        item_description = self.clip_clf.describe_image(raw_img)
+        preproc_data = self.preprocessor.load_and_preprocess_img(img, item_description['furniture'])
         all_generated_images = []
 
         if location_category in ["indoor", "outdoor"]:
@@ -50,7 +51,7 @@ class InsertEvetything:
             pipe_images = self.sd_worker(prompt, preproc_data)
             all_generated_images.extend(pipe_images)
 
-        pipe_images = self.iqa_ranker(pipe_images, num_infer_images=num_result_imgs)
+        pipe_images = self.iqa_ranker(all_generated_images, num_infer_images=num_result_imgs)
         
         result_images = self.post_proc(pipe_images)
         return result_images
