@@ -20,7 +20,7 @@ from library.insert_everything import InsertEvetything
 
 
 
-PROMPT_GENERATOR = 'llama'
+PROMPT_GENERATOR = 'default'
 TELEGRAM_BOT_TOKEN = ""
 
 # Enable logging
