@@ -31,5 +31,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install additional dependencies
 RUN pip install git+https://github.com/sberbank-ai/Real-ESRGAN.git
 
-# Run test.py when the container launches
-CMD ["python3.10", "test.py"]
+# ENV TELEGRAM_BOT_TOKEN=your-telegram-bot-token
+
+CMD ["python", "tg_bot.py"]
