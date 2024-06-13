@@ -28,8 +28,9 @@ class ImagePreprocessor:
         rectification_factor = 1 - resize_factor
         position_pt *= rectification_factor
 
+        xy_factor = img.size[1] / img.size[0]
         y_size = resize_factor * expected_size[1]
-        x_size = y_size * img.size[0] / img.size[1]
+        x_size = xy_factor * y_size
         x_size, y_size = int(x_size), int(y_size)
         print(f"resize orig immg to {(y_size, x_size)}")
 

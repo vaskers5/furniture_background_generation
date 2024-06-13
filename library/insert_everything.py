@@ -39,9 +39,9 @@ class InsertEvetything:
                 available_locations = [*self.data["indoor"], *self.data["outdoor"]]
     
             elif location_category == "automatic":
-                available_locations = self.data[item_description["category"]]
+                available_locations = self.data[clip_data["category"]]
                 
-            prompts = [f"{item_description['furniture']} {location}" for location in available_locations]
+            prompts = [f"{clip_data['furniture']} {location}" for location in available_locations]
             
         elif self.prompt_generator == "llama":
             furniture_category_mapper = {
