@@ -1,21 +1,4 @@
 {
-    "furniture_types": [
-        "chair",
-        "table",
-        "sofa",
-        "bed",
-        "lamp",
-        "chandelier",
-        "garden table",
-        "lounge chair",
-        "beach umbrella",
-        "swimming pool",
-        "beach lounger",
-        "garden swing",
-        "hammock",
-        "hanging chair",
-        "gazebo"
-    ],
     "indoor": [
         "in a living room",
         "in a bathroom",
@@ -96,5 +79,26 @@
             0.7,
             1.0
         ]
+    },
+    "clip_data": {
+        
+        "furniture_types": [
+        "chair",
+        "table",
+        "sofa",
+        "bed",
+        "lamp",
+        "chandelier",
+        "garden table",
+        "lounge chair",
+        "beach umbrella",
+        "swimming pool",
+        "beach lounger",
+        "garden swing",
+        "hammock",
+        "hanging chair",
+        "gazebo"],
+        
+        "furniture_categories": ["garden furniture", "house furniture", "lightning"]
     }
 }
