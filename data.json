@@ -39,7 +39,15 @@
             0.55,
             1.0
         ],
-        "chandelier": [
+        "simple chandelier": [
+            0.45,
+            0.0
+        ],
+        "modern chandelier": [
+            0.45,
+            0.0
+        ],
+        "vintage chandelier": [
             0.45,
             0.0
         ],
