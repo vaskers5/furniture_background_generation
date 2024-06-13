@@ -6,11 +6,12 @@ from PIL import Image
 
 
 class ClipClassfifier:
-    def __init__(self, device, furniture_types: list[str]):
-        self.furniture_types = furniture_types
+    def __init__(self, device, data: dict[str, list[str]]):
+        self.furniture_types = data["furniture_types"]
         self.model, self.preprocess = create_model_from_pretrained("hf-hub:timm/ViT-SO400M-14-SigLIP")
         self.tokenizer = get_tokenizer("hf-hub:timm/ViT-SO400M-14-SigLIP")
         self.cat_types = ["indoor", "outdoor"]
+        self.furniture_categories = data["furniture_categories"]
 
     def describe_image(self, img):
         image = self.preprocess(img).unsqueeze(0)
@@ -20,11 +21,17 @@ class ClipClassfifier:
 
         furniture_description = descriptions[furnitrure_index]
         furniture_guess = self.furniture_types[furnitrure_index]
+        
         category_list = [f"{cat} {furniture_description}" for cat in self.cat_types]
         cat_index = self.__get_clip_prediction(image, category_list)
         category_guess = self.cat_types[cat_index]
+
+        furniture_cat_prompts = [f"photo of {item}" for item in self.furniture_categories]
+        furniture_cat_index = self.__get_clip_prediction(image, furniture_cat_prompts)
+        furniture_cat_guess = self.furniture_categories[furniture_cat_index]
+        
         logger.info(f"Provided item classified as {furniture_guess} which must placed {category_guess}")
-        return {"furniture": furniture_guess, "category": category_guess}
+        return {"furniture": furniture_guess, "category": category_guess, "furniture_category": furniture_cat_guess}
 
     def __get_clip_prediction(self, image, item_list):
         text = self.tokenizer(item_list, context_length=self.model.context_length)

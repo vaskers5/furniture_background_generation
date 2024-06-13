@@ -94,8 +94,8 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     img = Image.open("temp_image.jpg")
     results_count = context.user_data["count"]
     generation_location = context.user_data["location"]
-
-    progress_message = await update.message.reply_text("Начинаю обработку...")
+    msg = """Начинаю обработку. Ваша обработка в очереди, среднее время обработки около 2-3 минут."""
+    progress_message = await update.message.reply_text(msg)
 
     def progress_callback(progress, total):
         asyncio.run_coroutine_threadsafe(
@@ -107,15 +107,13 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         executor, PIPELINE, img, results_count, generation_location, progress_callback
     )
 
-    # Сохраняем изображения и подготавливаем их для отправки
-    media = []
-    for i, image in enumerate(result_images):
-        file_path = f"result_image_{i}.jpg"
-        image.save(file_path)
-        media.append(InputMediaPhoto(open(file_path, "rb")))
-
-    await update.message.reply_media_group(media)
-
+    # Send the result images back to the user
+    for i, result_image in enumerate(result_images):
+        result_image_path = f"result_image_{i}.jpg"
+        result_image.save(result_image_path)
+        await update.message.reply_photo(photo=open(result_image_path, 'rb'))
+        os.remove(result_image_path)  # Clean up
+        
     # Очищаем видеопамять после завершения обработки
     torch.cuda.empty_cache()
 
