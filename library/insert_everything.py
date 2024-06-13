@@ -39,9 +39,9 @@ class InsertEvetything:
                 available_locations = [*self.data["indoor"], *self.data["outdoor"]]
     
             elif location_category == "automatic":
-                available_locations = self.data[item_description["category"]]
+                available_locations = self.data[clip_data["category"]]
                 
-            prompts = [f"{item_description['furniture']} {location}" for location in available_locations]
+            prompts = [f"{clip_data['furniture']} {location}" for location in available_locations]
             
         elif self.prompt_generator == "llama":
             furniture_category_mapper = {
@@ -69,6 +69,7 @@ class InsertEvetything:
         for loc_idx, prompt in enumerate(tqdm(prompts, desc="Processing locations")):
             logger.info(f"Current generation prompt is: '{prompt}'")
             pipe_images = self.sd_worker(prompt, preproc_data)
+            torch.cuda.empty_cache()
             all_generated_images.extend(pipe_images)
 
         pipe_images = self.iqa_ranker(all_generated_images, num_infer_images=num_result_imgs)
