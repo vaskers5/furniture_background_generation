@@ -3,7 +3,6 @@ import logging
 import asyncio
 import time
 from concurrent.futures import ThreadPoolExecutor
-
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, InputMediaPhoto
 from telegram.ext import (
     ApplicationBuilder,
@@ -15,6 +14,7 @@ from telegram.ext import (
     ConversationHandler,
 )
 from PIL import Image
+import torch
 from library.insert_everything import InsertEvetything
 
 
@@ -66,8 +66,10 @@ async def choose_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.edit_message_text(text=f"Вы выбрали: {query.data}. Сколько картинок вы хотите увидеть? (Максимум 20)",
-                                  reply_markup=reply_markup)
+    await query.edit_message_text(
+        text=f"Вы выбрали: {query.data}. Сколько картинок вы хотите увидеть? (Максимум 20)",
+        reply_markup=reply_markup
+    )
     return CHOOSE_COUNT
 
 
@@ -113,6 +115,9 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         media.append(InputMediaPhoto(open(file_path, "rb")))
 
     await update.message.reply_media_group(media)
+
+    # Очищаем видеопамять после завершения обработки
+    torch.cuda.empty_cache()
 
     return ConversationHandler.END
 
