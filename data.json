@@ -97,7 +97,9 @@
         "garden swing",
         "hammock",
         "hanging chair",
-        "gazebo"],
+        "gazebo",
+        "grill",
+        "heating radiator"],
         
         "furniture_categories": ["garden furniture", "house furniture", "lightning"]
     }

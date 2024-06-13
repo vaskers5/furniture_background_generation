@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 import asyncio
@@ -17,6 +18,9 @@ from PIL import Image
 import torch
 from library.insert_everything import InsertEvetything
 
+
+PROMPT_GENERATOR = 'llama'
+# PROMPT_GENERATOR = 'default'
 
 # Enable logging
 logging.basicConfig(
@@ -94,7 +98,7 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     img = Image.open("temp_image.jpg")
     results_count = context.user_data["count"]
     generation_location = context.user_data["location"]
-    msg = """Начинаю обработку. Ваша обработка в очереди, среднее время обработки около 2-3 минут."""
+    msg = """Начинаю обработку. Ваша обработка в очереди, среднее время обработки около 3-5 минут."""
     progress_message = await update.message.reply_text(msg)
 
     def progress_callback(progress, total):
@@ -104,7 +108,7 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
     loop = asyncio.get_event_loop()
     result_images = await loop.run_in_executor(
-        executor, PIPELINE, img, results_count, generation_location, progress_callback
+        executor, PIPELINE, img, results_count, generation_location
     )
 
     # Send the result images back to the user
@@ -126,30 +130,38 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 def main() -> None:
-    application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
-
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler("start", start)],
-        states={
-            CHOOSE_LOCATION: [CallbackQueryHandler(choose_location)],
-            CHOOSE_COUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, choose_count)],
-            UPLOAD_IMAGE: [MessageHandler(filters.PHOTO, upload_image)],
-        },
-        fallbacks=[CallbackQueryHandler(cancel, pattern='cancel')],
-    )
-
-    application.add_handler(conv_handler)
-
-    application.run_polling()
-
+    while True:
+        try:
+            application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+        
+            conv_handler = ConversationHandler(
+                entry_points=[CommandHandler("start", start)],
+                states={
+                    CHOOSE_LOCATION: [CallbackQueryHandler(choose_location)],
+                    CHOOSE_COUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, choose_count)],
+                    UPLOAD_IMAGE: [MessageHandler(filters.PHOTO, upload_image)],
+                },
+                fallbacks=[CallbackQueryHandler(cancel, pattern='cancel')],
+            )
+        
+            application.add_handler(conv_handler)
+        
+            application.run_polling()
+            
+        except Exception as e:
+            
+            logger.exception(f"An error occurred: {e}")
+            time.sleep(5)  # Wait
+        
 
 def build_pipeline():
     with open('data.json', 'r') as f:
         data = json.load(f)
-    return InsertEvetything(data)
+    return InsertEvetything(data, prompt_generator=PROMPT_GENERATOR)
 
 
 PIPELINE = build_pipeline()
+
 
 if __name__ == "__main__":
     main()
