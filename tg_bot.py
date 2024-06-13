@@ -20,8 +20,8 @@ from library.insert_everything import InsertEvetything
 
 
 
-# PROMPT_GENERATOR = 'llama'
-PROMPT_GENERATOR = 'default'
+PROMPT_GENERATOR = 'llama'
+TELEGRAM_BOT_TOKEN = ""
 
 # Enable logging
 logging.basicConfig(
@@ -54,7 +54,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         [InlineKeyboardButton("Вне дома", callback_data="outdoor")],
         [InlineKeyboardButton("Определить автоматически", callback_data="automatic")],
         [InlineKeyboardButton("Подойдет любой вариант", callback_data="all")],
-        [InlineKeyboardButton("Отмена", callback_data="cancel")],
+        # [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Выберите аргумент пайплайна:", reply_markup=reply_markup)
@@ -68,7 +68,7 @@ async def choose_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return await cancel(update, context)
     context.user_data["location"] = query.data
     keyboard = [
-        [InlineKeyboardButton("Отмена", callback_data="cancel")],
+        # [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(

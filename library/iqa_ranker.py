@@ -5,7 +5,7 @@ from PIL import Image
 
 class IQARanker:
     def __init__(self, device: torch.device):
-        self.metric_name = "maniqa-kadid"
+        self.metric_name = "clipiqa+_vitL14_512" # "maniqa-kadid"
         self.metric = pyiqa.create_metric(self.metric_name, device=device)
 
     def __call__(self, imgs: list[Image], num_infer_images: int):

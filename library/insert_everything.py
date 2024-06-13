@@ -53,6 +53,7 @@ class InsertEvetything:
             llama_prompt = f'{clip_data["furniture"]}, {clip_data["furniture_category"]}'
             llama_result = self.llama_client.generate(llama_prompt)
             prompts = [item[3:].replace('.', '') for item in llama_result.split('\n')]
+            prompts = [item for item in prompts if len(item) > 10]
     
         return prompts
             
