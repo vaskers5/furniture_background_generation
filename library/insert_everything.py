@@ -51,7 +51,7 @@ class InsertEvetything:
             pipe_images = self.sd_worker(prompt, preproc_data)
             all_generated_images.extend(pipe_images)
 
-        pipe_images = self.iqa_ranker(pipe_images, num_infer_images=num_result_imgs)
+        pipe_images = self.iqa_ranker(all_generated_images, num_infer_images=num_result_imgs)
         
         result_images = self.post_proc(pipe_images)
         return result_images
