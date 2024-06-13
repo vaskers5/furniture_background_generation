@@ -1,7 +1,9 @@
 import json
-
 import logging
 import asyncio
+import time
+from concurrent.futures import ThreadPoolExecutor
+
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, InputMediaPhoto
 from telegram.ext import (
     ApplicationBuilder,
@@ -13,9 +15,6 @@ from telegram.ext import (
     ConversationHandler,
 )
 from PIL import Image
-from tqdm.asyncio import tqdm_asyncio
-
-
 from library.insert_everything import InsertEvetything
 
 
@@ -28,15 +27,18 @@ logger = logging.getLogger(__name__)
 # Define states
 CHOOSE_LOCATION, CHOOSE_COUNT, UPLOAD_IMAGE = range(3)
 
+# Thread pool for blocking calls
+executor = ThreadPoolExecutor()
+
 
 # Temporary function
-async def temp_func(img: Image, results_count: int, progress_callback, generation_location="all"):
+def temp_func(img: Image, results_count: int, progress_callback, generation_location="all"):
     test_img = "test_imgs/handled_chair.webp"
     locations_count = 20
 
     for i in range(locations_count):
-        await asyncio.sleep(1)
-        await progress_callback(i + 1, locations_count)
+        time.sleep(1)
+        progress_callback(i + 1, locations_count)
 
     return [Image.open(test_img) for _ in range(results_count)]
 
@@ -47,7 +49,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         [InlineKeyboardButton("Вне дома", callback_data="outdoor")],
         [InlineKeyboardButton("Определить автоматически", callback_data="automatic")],
         [InlineKeyboardButton("Подойдет любой вариант", callback_data="all")],
-        # [InlineKeyboardButton("Отмена", callback_data="cancel")],
+        [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Выберите аргумент пайплайна:", reply_markup=reply_markup)
@@ -61,7 +63,7 @@ async def choose_location(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         return await cancel(update, context)
     context.user_data["location"] = query.data
     keyboard = [
-        # [InlineKeyboardButton("Отмена", callback_data="cancel")],
+        [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(text=f"Вы выбрали: {query.data}. Сколько картинок вы хотите увидеть? (Максимум 20)",
@@ -76,7 +78,7 @@ async def choose_count(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         return CHOOSE_COUNT
     context.user_data["count"] = count
     keyboard = [
-        # [InlineKeyboardButton("Отмена", callback_data="cancel")],
+        [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Загрузите картинку:", reply_markup=reply_markup)
@@ -91,15 +93,25 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     results_count = context.user_data["count"]
     generation_location = context.user_data["location"]
 
-    progress_message = update.message.reply_text("Начинаю обработку...")
+    progress_message = await update.message.reply_text("Начинаю обработку...")
 
-    async def progress_callback(progress, total):
-        await progress_message.edit_text(f"Прогресс: {progress}/{total}")
+    def progress_callback(progress, total):
+        asyncio.run_coroutine_threadsafe(
+            progress_message.edit_text(f"Прогресс: {progress}/{total}"), context.application.loop
+        )
 
-    # result_images = temp_func(img, results_count, progress_callback, generation_location)
-    result_images = await PIPELINE(img, results_count, generation_location, progress_callback)
+    loop = asyncio.get_event_loop()
+    result_images = await loop.run_in_executor(
+        executor, PIPELINE, img, results_count, generation_location, progress_callback
+    )
 
-    media = [InputMediaPhoto(open(img.filename, "rb")) for img in result_images]
+    # Сохраняем изображения и подготавливаем их для отправки
+    media = []
+    for i, image in enumerate(result_images):
+        file_path = f"result_image_{i}.jpg"
+        image.save(file_path)
+        media.append(InputMediaPhoto(open(file_path, "rb")))
+
     await update.message.reply_media_group(media)
 
     return ConversationHandler.END
@@ -128,7 +140,6 @@ def main() -> None:
     application.run_polling()
 
 
-
 def build_pipeline():
     with open('data.json', 'r') as f:
         data = json.load(f)
@@ -136,7 +147,6 @@ def build_pipeline():
 
 
 PIPELINE = build_pipeline()
-
 
 if __name__ == "__main__":
     main()
