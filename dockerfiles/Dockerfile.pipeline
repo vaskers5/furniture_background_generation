@@ -32,4 +32,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install git+https://github.com/sberbank-ai/Real-ESRGAN.git
 
 # Run test.py when the container launches
-CMD ["python3.10", "test.py"]
+CMD ["python3.10", "tg_bot.py"]

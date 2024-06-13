@@ -19,8 +19,9 @@ import torch
 from library.insert_everything import InsertEvetything
 
 
-PROMPT_GENERATOR = 'llama'
-# PROMPT_GENERATOR = 'default'
+
+# PROMPT_GENERATOR = 'llama'
+PROMPT_GENERATOR = 'default'
 
 # Enable logging
 logging.basicConfig(
@@ -117,7 +118,7 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         result_image.save(result_image_path)
         await update.message.reply_photo(photo=open(result_image_path, 'rb'))
         os.remove(result_image_path)  # Clean up
-        
+
     # Очищаем видеопамять после завершения обработки
     torch.cuda.empty_cache()
 
@@ -130,29 +131,22 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 def main() -> None:
-    while True:
-        try:
-            application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
-        
-            conv_handler = ConversationHandler(
-                entry_points=[CommandHandler("start", start)],
-                states={
-                    CHOOSE_LOCATION: [CallbackQueryHandler(choose_location)],
-                    CHOOSE_COUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, choose_count)],
-                    UPLOAD_IMAGE: [MessageHandler(filters.PHOTO, upload_image)],
-                },
-                fallbacks=[CallbackQueryHandler(cancel, pattern='cancel')],
-            )
-        
-            application.add_handler(conv_handler)
-        
-            application.run_polling()
-            
-        except Exception as e:
-            
-            logger.exception(f"An error occurred: {e}")
-            time.sleep(5)  # Wait
-        
+    application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler("start", start)],
+        states={
+            CHOOSE_LOCATION: [CallbackQueryHandler(choose_location)],
+            CHOOSE_COUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, choose_count)],
+            UPLOAD_IMAGE: [MessageHandler(filters.PHOTO, upload_image)],
+        },
+        fallbacks=[CallbackQueryHandler(cancel, pattern='cancel')],
+    )
+
+    application.add_handler(conv_handler)
+
+    application.run_polling()
+
 
 def build_pipeline():
     with open('data.json', 'r') as f:

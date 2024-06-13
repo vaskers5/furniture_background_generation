@@ -69,6 +69,7 @@ class InsertEvetything:
         for loc_idx, prompt in enumerate(tqdm(prompts, desc="Processing locations")):
             logger.info(f"Current generation prompt is: '{prompt}'")
             pipe_images = self.sd_worker(prompt, preproc_data)
+            torch.cuda.empty_cache()
             all_generated_images.extend(pipe_images)
 
         pipe_images = self.iqa_ranker(all_generated_images, num_infer_images=num_result_imgs)
