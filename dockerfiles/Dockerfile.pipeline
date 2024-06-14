@@ -1,0 +1,35 @@
+FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+RUN apt update && apt install -yq --no-install-recommends \
+    apt-utils \
+    cmake \
+    cron \
+    git \
+    libsm6 \
+    libxext6 \
+    libfontconfig1 \
+    libfreetype6-dev \
+    libgl1-mesa-glx \
+    libxrender1 \
+    ninja-build \
+    pkg-config \
+    python3-pip \
+    python3.10-dev \
+    swig \
+    wget \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1
+
+# Copy the current directory contents into the container at /usr/src/app
+COPY . .
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install additional dependencies
+RUN pip install git+https://github.com/sberbank-ai/Real-ESRGAN.git
+
+# Run test.py when the container launches
+CMD ["python3.10", "tg_bot.py"]
