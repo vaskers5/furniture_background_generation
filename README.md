@@ -1,5 +1,14 @@
 # furniture_background_generation
 
+#### Зависимости по железу:
+
+Miminal working build:
+
+1) RTX 3090
+2) 16 RAM
+3) Ryzen 5900x CPU
+4) OS: Ubuntu
+
 ### Сборка пайплайна:
 
 #### Установка зависимостей:
