@@ -18,6 +18,18 @@ unzip weights.zip -d weights
 
 ### Тестирование 
 
+
+#### Через телеграм:
+
+Зайдите в файл tg_bot.py и вставьте вот [сюда](https://github.com/vaskers5/furniture_background_generation/blob/470cb1d607713400e619e628b78b6e37deb19473/tg_bot.py#L24C1-L24C24) телеграм токен для вашего бота. Далее вы можете тестировать бота с помощью кнопок в интерфейсе
+
+```
+python tg_bot.py
+```
+
+
+#### Через пример python:
+
 ```bash
 python test.py
 ```
