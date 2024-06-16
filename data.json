@@ -51,7 +51,7 @@
             0.45,
             0.0
         ],
-        "garden table": [
+        "table": [
             0.55,
             1.0
         ],
@@ -71,7 +71,7 @@
             0.55,
             1.0
         ],
-        "garden swing": [
+        "swing": [
             0.55,
             1.0
         ],
@@ -106,12 +106,12 @@
             "simple chandelier",
             "modern chandelier",
             "vintage chandelier",
-            "garden table",
+            "table",
             "lounge chair",
             "beach umbrella",
             "swimming pool",
             "beach lounger",
-            "garden swing",
+            "swing",
             "hammock",
             "hanging chair",
             "gazebo",

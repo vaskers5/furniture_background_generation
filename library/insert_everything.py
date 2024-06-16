@@ -50,10 +50,12 @@ class InsertEvetything:
                                         "all": clip_data["furniture_category"],
                                         "automatic": clip_data["furniture_category"]
                                         }
-            llama_prompt = f'{clip_data["furniture"]}, {clip_data["furniture_category"]}'
+            f_cat = furniture_category_mapper[location_category]
+            llama_prompt = f'{clip_data["furniture"]}, {f_cat}'
+            logger.info(llama_prompt)
             llama_result = self.llama_client.generate(llama_prompt)
             prompts = [item[3:].replace('.', '') for item in llama_result.split('\n')]
-            prompts = [item for item in prompts if len(item) > 10]
+            prompts = [item for item in prompts if len(item) > 10][1:]
     
         return prompts
             
