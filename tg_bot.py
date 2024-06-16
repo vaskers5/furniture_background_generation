@@ -1,4 +1,6 @@
 import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
+
 import json
 import logging
 import asyncio
@@ -20,8 +22,11 @@ from library.insert_everything import InsertEvetything
 
 
 
-PROMPT_GENERATOR = 'default'
+# PROMPT_GENERATOR = 'default'
+# TELEGRAM_BOT_TOKEN = ""
+
 TELEGRAM_BOT_TOKEN = ""
+PROMPT_GENERATOR = 'llama'
 
 # Enable logging
 logging.basicConfig(
@@ -85,7 +90,7 @@ async def choose_count(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         return CHOOSE_COUNT
     context.user_data["count"] = count
     keyboard = [
-        [InlineKeyboardButton("Отмена", callback_data="cancel")],
+        # [InlineKeyboardButton("Отмена", callback_data="cancel")],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Загрузите картинку:", reply_markup=reply_markup)
@@ -99,7 +104,7 @@ async def upload_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     img = Image.open("temp_image.jpg")
     results_count = context.user_data["count"]
     generation_location = context.user_data["location"]
-    msg = """Начинаю обработку. Ваша обработка в очереди, среднее время обработки около 3-5 минут."""
+    msg = """Начинаю обработку. Ваша обработка в очереди, среднее время обработки около 1.5 минут."""
     progress_message = await update.message.reply_text(msg)
 
     def progress_callback(progress, total):
