@@ -3,13 +3,17 @@
 Repo was made on [hack](https://aiproducthack.com/). Main task of this solution - generate relevant background for a given picture of furnture.
 U can read our pitch on Russian language [here](https://docs.google.com/presentation/d/1eBFZ1ewcxjLrpcgMf1f4pzLtLxheGkDLd9sxEepeI98/edit?usp=sharing)
 
+Here is video how with example of working telegram bot:
+
+[![Working example](http://img.youtube.com/vi/arvgjLLa7vc/0.jpg)](http://www.youtube.com/watch?v=arvgjLLa7vc "Furniture Background Generation")
+
+
+
 ### Working examples
 
 ![Gaming chair](./test_imgs/result_chair.jpg)
 
 ![Journal table](./test_imgs/result_table.jpg)
-
-[![Telegram testing video](https://www.youtube.com/watch?v=arvgjLLa7vc)
 
 
 
